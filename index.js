@@ -27,6 +27,15 @@ let persons = [
     }
 ]
 
+
+// Functions
+const generateId = () => {
+    const id = Math.floor(Math.random() * 1000000)
+    return id
+}
+
+
+// GET
 app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
@@ -49,6 +58,29 @@ app.get('/api/persons/:id', (req, res) => {
         res.status(404).end()
 })
 
+
+// POST
+app.post('/api/persons', (req, res) => {
+    const body = req.body
+
+    if (!body.name)
+        return res.status(400).json({ error: 'name missing' })
+    if (!body.number)
+        return res.status(400).json({ error: 'number missing'})
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId()
+    }
+
+    persons = persons.concat(person)
+
+    res.json(person)
+})
+
+
+// DELETE
 app.delete('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     persons = persons.filter(p => p.id !== id)
