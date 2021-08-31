@@ -62,15 +62,19 @@ app.get('/api/persons/:id', (req, res) => {
 // POST
 app.post('/api/persons', (req, res) => {
     const body = req.body
+    const name = body.name
+    const number = body.number
 
-    if (!body.name)
+    if (!name)
         return res.status(400).json({ error: 'name missing' })
-    if (!body.number)
+    else if (!number)
         return res.status(400).json({ error: 'number missing'})
+    else if (persons.find(p => p.name === name))
+        return res.status(400).json({ error: 'name already exists in the phonebook'})
 
     const person = {
-        name: body.name,
-        number: body.number,
+        name: name,
+        number: number,
         id: generateId()
     }
 
