@@ -1,8 +1,13 @@
-const express = require('express')
-const app = express()
 const PORT = 3001
 
+const express = require('express')
+const app = express()
+
+const morgan = require('morgan')
+const logger = morgan('tiny')
+
 app.use(express.json())
+app.use(logger)
 
 let persons = [
     {
