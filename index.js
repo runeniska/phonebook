@@ -10,6 +10,7 @@ morgan.token('body', (req, _) => JSON.stringify(req.body))
 const logger = morgan(':method :url :status :res[content-length] - :response-time ms :body')
 
 app.use(express.json())
+app.use(express.static('build'))
 app.use(logger)
 app.use(cors())
 
