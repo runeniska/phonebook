@@ -4,6 +4,7 @@ const Person = require('./models/person')
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const { response } = require('express')
 
 const app = express()
 
@@ -17,25 +18,36 @@ app.use(cors())
 
 
 // GET
-app.get('/api/persons', (req, res) => {
-    Person.find({}).then(personList => res.json(personList))
+app.get('/api/persons', (req, res, next) => {
+    Person.find({})
+        .then(personList => res.json(personList))
+        .catch(error => next(error))
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, res, next) => {
     const date = new Date()
-    Person.find({}).then(personList => res.send(
-        `<p>Phonebook has info for ${personList.length} people</p>
-        <p>${date}</p>`
-    ))
+    Person.find({})
+        .then(personList => res.send(
+            `<p>Phonebook has info for ${personList.length} people</p>
+            <p>${date}</p>`
+        ))
+        .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (req, res) => {
-    Person.findById(req.params.id).then(person => res.json(person))
+app.get('/api/persons/:id', (req, res, next) => {
+    Person.findById(req.params.id)
+        .then(person => {
+            if (person)
+                res.json(person)
+            else
+                response.status(404).end()
+        })
+        .catch(error => next(error))
 })
 
 
 // POST
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
     const name = body.name
     const number = body.number
@@ -45,14 +57,35 @@ app.post('/api/persons', (req, res) => {
         number: number,
     })
 
-    person.save().then(savedPerson => res.json(savedPerson))
+    person.save().then(savedPerson => res.json(savedPerson)).catch(error => next(error))
 })
 
 
 // DELETE
-app.delete('/api/persons/:id', (req, res) => {
-    Person.findByIdAndRemove(req.params.id).then(result => res.status(204).end())
+app.delete('/api/persons/:id', (req, res, next) => {
+    Person.findByIdAndRemove(req.params.id)
+        .then(_ => res.status(204).end())
+        .catch(error => next(error))
 })
+
+
+// Handlers
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
+    next(error)
+}
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 
 // Run
