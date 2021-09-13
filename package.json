@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ~/fullstackopen2021/osa3/phonebook-frontend && npm run build --prod && cp -r build ~/phonebook",
-    "deploy": "git push heroku master"
+    "deploy": "git push heroku main"
   },
   "author": "Rune Niska",
   "license": "MIT",
