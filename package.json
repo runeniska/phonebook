@@ -8,11 +8,13 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ~/fullstackopen2021/osa3/phonebook-frontend && npm run build --prod && cp -r build ~/phonebook",
-    "deploy": "git push heroku main"
+    "deploy": "git push heroku main",
+    "lint": "eslint ."
   },
   "author": "Rune Niska",
   "license": "MIT",
   "devDependencies": {
+    "eslint": "^7.32.0",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
